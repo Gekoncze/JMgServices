@@ -4,6 +4,7 @@ import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import static cz.mg.services.NameProvider.getName;
@@ -12,7 +13,13 @@ import static cz.mg.services.NameProvider.getName;
     @SuppressWarnings("unchecked")
     static <T> @Mandatory T createInstance(@Mandatory Class<?> clazz) {
         try {
-            return (T) clazz.getDeclaredConstructor().newInstance();
+            try {
+                return (T) clazz.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                return (T) constructor.newInstance();
+            }
         } catch (ReflectiveOperationException e) {
             throw new ServiceException("Could not create instance of " + getName(clazz) + ".", e);
         }

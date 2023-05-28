@@ -4,6 +4,7 @@ import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import static cz.mg.services.Reflection.*;
 import static cz.mg.services.Validator.*;
@@ -47,7 +48,7 @@ public @Utility class Services {
 
     private static <T> void initialize(@Mandatory Class<T> serviceClass, @Mandatory T instance) {
         for (Field field : serviceClass.getDeclaredFields()) {
-            if (!field.getName().equals(INSTANCE_FIELD_NAME)) {
+            if (!Modifier.isStatic(field.getModifiers())) {
                 checkAnnotation(field);
                 checkNotStatic(field);
 
